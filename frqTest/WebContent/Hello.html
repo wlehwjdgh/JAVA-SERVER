@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+  <title>Line Chart</title>	
+  <script src="node_modules/chart.js/dist/Chart.min.js"></script>
+  <script src="node_modules/utils.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+
+
+<body>
+	<p>result : <span id="result"></span></p>
+	<button id="refreshData">Refresh</button>
+	
+	<div style="width:50%;">
+    <canvas id="myChartX"></canvas>
+    <br>
+    <br>
+		<canvas id="myChartY"></canvas>
+    <br>
+    <br>
+		<canvas id="myChartZ"></canvas>
+  </div>
+  
+<script>
+  const numOfChart  = 3;
+  const numOfData = 32;
+  const idxX = 0;
+  const idxY = 1;
+  const idxZ = 2;
+
+  var labelsData = new Array();
+  var canvasId = new Array(numOfChart);
+  var ctx = new Array(numOfChart);
+  var frqData = new Array(numOfChart);
+  var config = new Array(numOfChart);
+  var myChart = new Array(numOfChart);
+  var chartColor = new Array(numOfChart);
+  var chartLabel = new Array(numOfChart);
+
+  frqData[idxX] = new Array();
+  frqData[idxY] = new Array();
+  frqData[idxZ] = new Array();
+
+  canvasId[idxX] = "myChartX";
+  canvasId[idxY] = "myChartY";
+  canvasId[idxZ] = "myChartZ";
+
+  chartColor[idxX] = "#ff6384";
+  chartColor[idxY] = "#cc65fe";
+  chartColor[idxZ] = "#ffce56";
+
+  chartLabel[idxX] = "X";
+  chartLabel[idxY] = "Y";
+  chartLabel[idxZ] = "Z";
+
+  for(var i=0;i<numOfData;i++){
+    labelsData.push(i)
+  }
+  
+  for(var i=0;i<numOfChart;i++){
+    ctx[i] = document.getElementById( canvasId[i] );
+    config[i] = {
+      type: 'line',
+      data: {
+        labels: labelsData,
+        datasets: [{
+          label: chartLabel[i] +' Axis Frequency',
+          data: frqData[i],
+          backgroundColor: chartColor[i]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero:true
+            }
+          }]
+        }
+      }
+    }
+    myChart[i] = new Chart(ctx[i],config[i]);
+  }
+  window.onload = function() {
+    randomScalingFactor();
+    setInterval("randomScalingFactor()",2000);
+  };
+
+  var randomScalingFactor = function(){ 
+	
+    for(var i=0;i<numOfChart;i++){
+      for(var j=0;j<numOfData;j++){
+        frqData[i][j] = (Math.round(Math.random()*100));
+      }
+      window.myChart[i].update()
+    }
+  }
+  
+  $('#refreshData').click(function(){
+	  $.ajax({
+		  url:'http://localhost:8091/frqTest/Hello',
+		  type:'post',
+		  data:'test-browser',
+		  success:function(res){
+			//  $('#result').text(res);
+			alert(res);
+		  }
+	  })
+  })
+
+/*
+ * path : 전송 URL
+ * params : 전송 데이터 {'q':'a','s':'b','c':'d'...}으로 묶어서 배열 입력
+ * method : 전송 방식(생략가능)
+ */
+function post_to_url(path, params, method) {
+    method = method || "post"; // Set method to post by default, if not specified.
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+    for(var key in params) {
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", key);
+        hiddenField.setAttribute("value", params[key]);
+        form.appendChild(hiddenField);
+    }
+    document.body.appendChild(form);
+    form.submit();
+}
+
+//document.getElementById('refreshData').addEventListener('click', function() {
+//	post_to_url("Hello",'q');
+//});
+</script>
+
+</body>
+</html>
