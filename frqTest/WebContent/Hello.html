@@ -37,7 +37,8 @@
   var myChart = new Array(numOfChart);
   var chartColor = new Array(numOfChart);
   var chartLabel = new Array(numOfChart);
-
+  var obj;
+  
   frqData[idxX] = new Array();
   frqData[idxY] = new Array();
   frqData[idxZ] = new Array();
@@ -90,7 +91,8 @@
 
   var randomScalingFactor = function(){ 
 	
-    for(var i=0;i<numOfChart;i++){
+    for(var i=1;i<numOfChart;i++){
+    //for(var i=0;i<numOfChart;i++){
       for(var j=0;j<numOfData;j++){
         frqData[i][j] = (Math.round(Math.random()*100));
       }
@@ -104,38 +106,14 @@
 		  type:'post',
 		  data:'test-browser',
 		  success:function(res){
-			//  $('#result').text(res);
-			alert(res);
+			  $('#result').text(res);
+			  console.log(res);
+			  var obj = JSON.parse(res);
+			 // var obj = JSON.parse('{"axis":0,"data":[32768,45307,55938,63041,65535,63041,55938,45307,32768,20228,9597,2494,0,2494,9597,20228,32768,45307,55938,63041,65535,63041,55938,45307,32768,20228,9597,2494,0,2494,9597,20228],"length":32}');
+			  console.log(obj);
 		  }
 	  })
   })
-
-/*
- * path : 전송 URL
- * params : 전송 데이터 {'q':'a','s':'b','c':'d'...}으로 묶어서 배열 입력
- * method : 전송 방식(생략가능)
- */
-function post_to_url(path, params, method) {
-    method = method || "post"; // Set method to post by default, if not specified.
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", path);
-    for(var key in params) {
-        var hiddenField = document.createElement("input");
-        hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", key);
-        hiddenField.setAttribute("value", params[key]);
-        form.appendChild(hiddenField);
-    }
-    document.body.appendChild(form);
-    form.submit();
-}
-
-//document.getElementById('refreshData').addEventListener('click', function() {
-//	post_to_url("Hello",'q');
-//});
 </script>
 
 </body>
